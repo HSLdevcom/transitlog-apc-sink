@@ -1,0 +1,42 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+}
+
+group = 'fi.hsl.transitlog'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.pkg.github.com/HSLdevcom/*"
+        credentials {
+            username = project.findProperty("github.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+shadowJar {
+    archiveFileName ="${baseName}.${extension}"
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    implementation "io.github.microutils:kotlin-logging:1.6.22"
+
+    implementation "fi.hsl:transitdata-common:1.3.25"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
