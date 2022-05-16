@@ -35,6 +35,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
 
     init {
         val statement = connection.prepareStatement(DB_INSERT_QUERY)
+        statement.queryTimeout = 60 //60s timeout for the query
 
         dbWriterExecutor.scheduleWithFixedDelay({
             writeBatch(statement)
