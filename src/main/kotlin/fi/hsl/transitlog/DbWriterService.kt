@@ -38,7 +38,12 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         statement.queryTimeout = 60 //60s timeout for the query
 
         dbWriterExecutor.scheduleWithFixedDelay({
-            writeBatch(statement)
+            try {
+                writeBatch(statement)
+            } catch (e: Exception) {
+                log.error(e) { "Error writing APC data to DB" }
+                throw RuntimeException(e)
+            }
         }, dbWriteIntervalSeconds.toLong(), dbWriteIntervalSeconds.toLong(), TimeUnit.SECONDS)
     }
 
