@@ -9,7 +9,10 @@ import java.sql.Types
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
+@ExperimentalTime
 class DbWriterService(connection: Connection, private val messageAcknowledger: (MessageId) -> Unit, dbWriteIntervalSeconds: Int = 10) {
     private val log = KotlinLogging.logger {}
 
@@ -52,33 +55,37 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
 
         log.info { "Writing ${rows.size} APC data rows to DB" }
 
-        for (row in rows) {
-            val apcData = row.first
-            statement.setInt(1, apcData.dir)
-            statement.setInt(2, apcData.oper)
-            statement.setInt(3, apcData.veh)
-            statement.setObject(4, apcData.tst, Types.TIMESTAMP_WITH_TIMEZONE)
-            statement.setLong(5, apcData.tsi)
-            statement.setDouble(6, apcData.latitude)
-            statement.setDouble(7, apcData.longitude)
-            statement.setString(8, apcData.oday)
-            statement.setString(9, apcData.start)
-            if (apcData.stop != null) {
-                statement.setInt(10, apcData.stop)
-            } else {
-                statement.setNull(10, Types.INTEGER)
-            }
-            statement.setString(11, apcData.route)
-            statement.setString(12, apcData.passengerCountQuality)
-            statement.setInt(13, apcData.vehicleLoad)
-            statement.setDouble(14, apcData.vehicleLoadRatio)
-            statement.setInt(15, apcData.totalPassengersIn)
-            statement.setInt(16, apcData.totalPassengersOut)
+        val duration = measureTime {
+            for (row in rows) {
+                val apcData = row.first
+                statement.setInt(1, apcData.dir)
+                statement.setInt(2, apcData.oper)
+                statement.setInt(3, apcData.veh)
+                statement.setObject(4, apcData.tst, Types.TIMESTAMP_WITH_TIMEZONE)
+                statement.setLong(5, apcData.tsi)
+                statement.setDouble(6, apcData.latitude)
+                statement.setDouble(7, apcData.longitude)
+                statement.setString(8, apcData.oday)
+                statement.setString(9, apcData.start)
+                if (apcData.stop != null) {
+                    statement.setInt(10, apcData.stop)
+                } else {
+                    statement.setNull(10, Types.INTEGER)
+                }
+                statement.setString(11, apcData.route)
+                statement.setString(12, apcData.passengerCountQuality)
+                statement.setInt(13, apcData.vehicleLoad)
+                statement.setDouble(14, apcData.vehicleLoadRatio)
+                statement.setInt(15, apcData.totalPassengersIn)
+                statement.setInt(16, apcData.totalPassengersOut)
 
-            statement.addBatch()
+                statement.addBatch()
+            }
+
+            statement.executeBatch()
         }
 
-        statement.executeBatch()
+        log.info { "Wrote ${rows.size} APC data rows to DB in ${duration.inWholeMilliseconds}ms" }
 
         rows.map { it.second }.forEach(messageAcknowledger)
     }

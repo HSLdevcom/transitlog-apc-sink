@@ -11,7 +11,9 @@ import mu.KotlinLogging
 import org.apache.pulsar.client.api.Message
 import org.apache.pulsar.client.api.MessageId
 import java.sql.DriverManager
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 class MessageHandler(private val pulsarApplicationContext: PulsarApplicationContext) : IMessageHandler {
     private val log = KotlinLogging.logger {}
 
