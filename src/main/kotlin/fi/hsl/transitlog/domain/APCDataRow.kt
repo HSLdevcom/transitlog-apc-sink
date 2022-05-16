@@ -2,6 +2,8 @@ package fi.hsl.transitlog.domain
 
 import fi.hsl.common.passengercount.proto.PassengerCount
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
@@ -13,8 +15,8 @@ data class APCDataRow(val dir: Int,
                       val tsi: Long,
                       val latitude: Double,
                       val longitude: Double,
-                      val oday: String,
-                      val start: String,
+                      val oday: LocalDate,
+                      val start: LocalTime,
                       val stop: Int?,
                       val route: String,
                       val passengerCountQuality: String,
@@ -40,8 +42,8 @@ data class APCDataRow(val dir: Int,
                 payload.tsi,
                 payload.lat,
                 payload.long,
-                payload.oday,
-                payload.start,
+                LocalDate.parse(payload.oday),
+                LocalTime.parse(payload.start),
                 payload.stop,
                 payload.route,
                 payload.vehicleCounts.countQuality,

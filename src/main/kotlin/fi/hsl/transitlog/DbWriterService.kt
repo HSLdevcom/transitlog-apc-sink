@@ -77,8 +77,8 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
                 statement.setLong(6, apcData.tsi)
                 statement.setDouble(7, apcData.latitude)
                 statement.setDouble(8, apcData.longitude)
-                statement.setString(9, apcData.oday)
-                statement.setString(10, apcData.start)
+                statement.setObject(9, apcData.oday, Types.DATE)
+                statement.setObject(10, apcData.start, Types.TIME)
                 if (apcData.stop != null) {
                     statement.setInt(11, apcData.stop)
                 } else {
