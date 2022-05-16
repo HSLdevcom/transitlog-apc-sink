@@ -20,7 +20,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         private const val MAX_WRITE_BATCH_SIZE = 10000
 
         private const val DB_INSERT_QUERY = """
-            INSERT INTO passengercount (dir, oper, veh, uniqueVehicleId, tst, tsi, latitude, longitude, oday, start, stop, route, passengerCountQuality, vehicleLoad, vehicleLoadRatio, totalPassengersIn, totalPassengersOut) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO passengercount (dir, oper, veh, unique_vehicle_id, tst, tsi, latitude, longitude, oday, start, stop, route, passenger_count_quality, vehicle_load, vehicle_load_ratio, total_passengers_in, total_passengers_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
     }
 
