@@ -64,7 +64,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
             return
         }
 
-        log.info { "Writing ${rows.size} APC data rows to DB" }
+        log.debug { "Writing ${rows.size} APC data rows to DB" }
 
         val duration = measureTime {
             for (row in rows) {
