@@ -53,6 +53,11 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
             }
         }
 
+        if (rows.isEmpty()) {
+            log.info { "No data to write" }
+            return
+        }
+
         log.info { "Writing ${rows.size} APC data rows to DB" }
 
         val duration = measureTime {
