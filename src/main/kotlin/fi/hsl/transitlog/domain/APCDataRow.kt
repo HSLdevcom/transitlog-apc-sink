@@ -8,6 +8,7 @@ import java.time.ZoneId
 data class APCDataRow(val dir: Int,
                       val oper: Int,
                       val veh: Int,
+                      val uniqueVehicleId: String,
                       val tst: OffsetDateTime,
                       val tsi: Long,
                       val latitude: Double,
@@ -34,6 +35,7 @@ data class APCDataRow(val dir: Int,
                 payload.dir.toInt(),
                 payload.oper,
                 payload.veh,
+                "${payload.oper}/${payload.veh}", //TODO: should we use operator + vehicle values from the topic?
                 Instant.ofEpochMilli(payload.tst).atZone(ZoneId.of("Europe/Helsinki")).toOffsetDateTime(), //TODO: don't hardcode timezone
                 payload.tsi,
                 payload.lat,
