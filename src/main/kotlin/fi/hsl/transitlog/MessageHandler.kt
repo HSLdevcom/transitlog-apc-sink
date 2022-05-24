@@ -11,6 +11,8 @@ import org.apache.pulsar.client.api.Message
 import org.apache.pulsar.client.api.MessageId
 import java.sql.Connection
 import java.sql.DriverManager
+import java.time.Duration
+import java.time.Instant
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -18,6 +20,9 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
     private val log = KotlinLogging.logger {}
 
     private val dbWriterService = DbWriterService(createDbConnection(), ::ack)
+
+    private val tstMaxFuture = pulsarApplicationContext.config!!.getDuration("application.apcTstMaxFuture")
+    private val tstMaxPast = pulsarApplicationContext.config!!.getDuration("application.apcTstMaxPast")
 
     private var lastAcknowledgedMessageTime = System.nanoTime()
 
@@ -38,12 +43,25 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
         return DriverManager.getConnection(connectionString)
     }
 
+    private fun hasValidTst(apcData: PassengerCount.Data): Boolean {
+        val tst = Instant.ofEpochMilli(apcData.payload.tst)
+        val receivedAt = Instant.ofEpochMilli(apcData.receivedAt)
+
+        return Duration.between(tst, receivedAt) < tstMaxPast && Duration.between(receivedAt, tst) < tstMaxFuture
+    }
+
     override fun handleMessage(msg: Message<Any>) {
         if (TransitdataSchema.hasProtobufSchema(msg, TransitdataProperties.ProtobufSchema.PassengerCount)) {
             try {
                 val apcData = PassengerCount.Data.parseFrom(msg.data)
 
-                dbWriterService.addToWriteQueue(apcData.toAPCDataRow(), msg.messageId)
+                if (hasValidTst(apcData)) {
+                    dbWriterService.addToWriteQueue(apcData.toAPCDataRow(), msg.messageId)
+                } else {
+                    log.warn { "Timestamp (tst) of APC message from vehicle ${apcData.payload.oper}/${apcData.payload.veh} was outside of accepted range. Tst: ${apcData.payload.tst}, received at: ${apcData.receivedAt}" }
+                    //Ack message with invalid timestamp so that we don't receive it again
+                    ack(msg.messageId)
+                }
             } catch (e: Exception) {
                 log.warn(e) { "Failed to handle message" }
                 e.printStackTrace()
