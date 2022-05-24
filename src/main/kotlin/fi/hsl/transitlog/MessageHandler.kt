@@ -11,6 +11,7 @@ import org.apache.pulsar.client.api.Message
 import org.apache.pulsar.client.api.MessageId
 import java.sql.Connection
 import java.sql.DriverManager
+import java.time.Duration
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -20,6 +21,9 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
     private val dbWriterService = DbWriterService(createDbConnection(), ::ack)
 
     private var lastAcknowledgedMessageTime = System.nanoTime()
+
+    val isHealthy: Boolean
+        get() = Duration.ofNanos(System.nanoTime() - lastAcknowledgedMessageTime)  < pulsarApplicationContext.config!!.getDuration("application.unhealthyIfNoAck")
 
     private fun createDbConnection(): Connection {
         val dbAddress = pulsarApplicationContext.config!!.getString("db.address")
