@@ -22,8 +22,16 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
 
     private var lastAcknowledgedMessageTime = System.nanoTime()
 
-    val isHealthy: Boolean
-        get() = Duration.ofNanos(System.nanoTime() - lastAcknowledgedMessageTime)  < pulsarApplicationContext.config!!.getDuration("application.unhealthyIfNoAck")
+    fun isHealthy(): Boolean {
+        val timeSinceLastAck = Duration.ofNanos(System.nanoTime() - lastAcknowledgedMessageTime)
+        val healthy = timeSinceLastAck < pulsarApplicationContext.config!!.getDuration("application.unhealthyIfNoAck")
+
+        if (!healthy) {
+            log.warn { "Service unhealthy, last message was acknowledged ${timeSinceLastAck.seconds} seconds ago" }
+        }
+
+        return healthy
+    }
 
     private fun createDbConnection(): Connection {
         val dbAddress = pulsarApplicationContext.config!!.getString("db.address")
