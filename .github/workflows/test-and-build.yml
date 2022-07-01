@@ -34,7 +34,7 @@ jobs:
           name: transitlog-apc-sink.jar
           path: build/libs
       - name: Build and publish develop Docker image
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: hsldevcom/transitlog-apc-sink
           username: ${{ secrets.DOCKER_USER }}
@@ -53,7 +53,7 @@ jobs:
           name: transitlog-apc-sink.jar
           path: build/libs
       - name: Build and publish release Docker image
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: hsldevcom/transitlog-apc-sink
           username: ${{ secrets.DOCKER_USER }}
