@@ -3,9 +3,11 @@ package fi.hsl.transitlog
 import fi.hsl.common.config.ConfigParser
 import fi.hsl.common.pulsar.PulsarApplication
 import mu.KotlinLogging
+import kotlin.time.ExperimentalTime
 
 private val log = KotlinLogging.logger {}
 
+@ExperimentalTime
 fun main() {
     log.info { "Starting application" }
 
@@ -16,6 +18,10 @@ fun main() {
 
         val messageHandler = MessageHandler(app.context)
         app.launchWithHandler(messageHandler)
+
+        if (app.context.healthServer != null) {
+            app.context.healthServer!!.addCheck(messageHandler::isHealthy)
+        }
 
         log.info { "Started handling messages" }
     } catch (e: Exception) {

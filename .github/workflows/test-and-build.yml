@@ -34,11 +34,11 @@ jobs:
           name: transitlog-apc-sink.jar
           path: build/libs
       - name: Build and publish develop Docker image
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: hsldevcom/transitlog-apc-sink
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
+          password: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
           tags: develop
   build-release-docker-image:
     needs: test
@@ -53,9 +53,9 @@ jobs:
           name: transitlog-apc-sink.jar
           path: build/libs
       - name: Build and publish release Docker image
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: hsldevcom/transitlog-apc-sink
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
+          password: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
           tag_semver: true
