@@ -37,8 +37,8 @@ jobs:
         uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: hsldevcom/transitlog-apc-sink
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
+          password: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
           tags: develop
   build-release-docker-image:
     needs: test
@@ -56,6 +56,6 @@ jobs:
         uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: hsldevcom/transitlog-apc-sink
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
+          password: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
           tag_semver: true
