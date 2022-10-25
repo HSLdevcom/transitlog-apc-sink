@@ -20,6 +20,7 @@ fun main() {
         app.launchWithHandler(messageHandler)
 
         if (app.context.healthServer != null) {
+            log.info { "Healthcheck enabled" }
             app.context.healthServer!!.addCheck(messageHandler::isHealthy)
         }
 
