@@ -9,6 +9,7 @@ import java.sql.Types
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -48,7 +49,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
     }
 
     private fun writeBatch(statement: PreparedStatement) {
-        val rows = ArrayList<Pair<APCDataRow, MessageId>>(writeQueue.size)
+        val rows = ArrayList<Pair<APCDataRow, MessageId>>(min(MAX_WRITE_BATCH_SIZE, writeQueue.size))
 
         for (i in 1..MAX_WRITE_BATCH_SIZE) {
             val row = writeQueue.poll()
