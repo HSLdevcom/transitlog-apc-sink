@@ -27,7 +27,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    implementation "io.github.microutils:kotlin-logging:1.6.22"
+    implementation "io.github.microutils:kotlin-logging:3.0.2"
 
     implementation ('fi.hsl:transitdata-common:1.4.3') {
         exclude group: 'javax.xml.bind', module: 'activation'
