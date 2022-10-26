@@ -1,11 +1,11 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.0.0'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
     id 'application'
 }
 
 group = 'fi.hsl.transitlog'
-version = '1.0.0'
+version = '1.0.1'
 
 repositories {
     mavenCentral()
@@ -25,9 +25,11 @@ shadowJar {
 dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
     implementation "io.github.microutils:kotlin-logging:1.6.22"
 
-    implementation ('fi.hsl:transitdata-common:1.3.29') {
+    implementation ('fi.hsl:transitdata-common:1.4.3') {
         exclude group: 'javax.xml.bind', module: 'activation'
     }
     //Needed for Pulsar
@@ -41,11 +43,11 @@ test {
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = '1.8'
+    kotlinOptions.jvmTarget = "11"
 }
 
 compileTestKotlin {
-    kotlinOptions.jvmTarget = '1.8'
+    kotlinOptions.jvmTarget = "11"
 }
 
 application {
