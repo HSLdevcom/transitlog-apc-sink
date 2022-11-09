@@ -17,14 +17,13 @@ fun main() {
         val app = PulsarApplication.newInstance(config)
 
         val messageHandler = MessageHandler(app.context)
-        app.launchWithHandler(messageHandler)
 
         if (app.context.healthServer != null) {
             log.info { "Healthcheck enabled" }
             app.context.healthServer!!.addCheck(messageHandler::isHealthy)
         }
 
-        log.info { "Started handling messages" }
+        app.launchWithHandler(messageHandler)
     } catch (e: Exception) {
         log.error(e) { "Exception at main" }
     }
