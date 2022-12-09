@@ -3,6 +3,7 @@ package fi.hsl.transitlog
 import fi.hsl.transitlog.domain.APCDataRow
 import mu.KotlinLogging
 import org.apache.pulsar.client.api.MessageId
+import java.sql.BatchUpdateException
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Types
@@ -42,7 +43,11 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
             try {
                 writeBatch(statement)
             } catch (e: Exception) {
-                log.error(e) { "Error writing APC data to DB" }
+                if (e is BatchUpdateException) {
+                    log.error(e) { "Batch update exception when writing APC data to DB (SQL state: ${e.sqlState}, error code: ${e.errorCode}, next exception: ${e.nextException?.toString()})" }
+                } else {
+                    log.error(e) { "Unknown exception when writing APC data to DB" }
+                }
                 throw RuntimeException(e)
             }
         }, dbWriteIntervalSeconds.toLong(), dbWriteIntervalSeconds.toLong(), TimeUnit.SECONDS)
