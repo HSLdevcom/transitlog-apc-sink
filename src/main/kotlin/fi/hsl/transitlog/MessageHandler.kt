@@ -13,6 +13,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.time.Duration
 import java.time.Instant
+import java.time.format.DateTimeFormatter
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -61,6 +62,8 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
         return Duration.between(tst, receivedAt) < tstMaxPast && Duration.between(receivedAt, tst) < tstMaxFuture
     }
 
+    private fun formatTimestampForLog(timestamp: Long): String = "$timestamp (${DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(timestamp))})"
+
     override fun handleMessage(msg: Message<Any>) {
         if (TransitdataSchema.hasProtobufSchema(msg, TransitdataProperties.ProtobufSchema.PassengerCount)) {
             try {
@@ -69,7 +72,9 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
                 if (hasValidTst(apcData)) {
                     dbWriterService.addToWriteQueue(apcData.toAPCDataRow(), msg.messageId)
                 } else {
-                    log.warn { "Timestamp (tst) of APC message from vehicle ${apcData.payload.oper}/${apcData.payload.veh} was outside of accepted range. Tst: ${apcData.payload.tst}, received at: ${apcData.receivedAt}" }
+                    log.warn {
+                        "Timestamp (tst) of APC message from vehicle ${apcData.payload.oper}/${apcData.payload.veh} was outside of accepted range. Tst: ${formatTimestampForLog(apcData.payload.tst)}, received at: ${formatTimestampForLog(apcData.receivedAt)}"
+                    }
                     //Ack message with invalid timestamp so that we don't receive it again
                     ack(msg.messageId)
                 }
