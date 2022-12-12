@@ -22,7 +22,18 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         private const val MAX_WRITE_BATCH_SIZE = 1500
 
         private const val DB_INSERT_QUERY = """
-            INSERT INTO passengercount (dir, oper, veh, unique_vehicle_id, tst, tsi, latitude, longitude, oday, start, stop, route, passenger_count_quality, vehicle_load, vehicle_load_ratio, total_passengers_in, total_passengers_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO passengercount (
+              dir, oper, veh, unique_vehicle_id, 
+              tst, tsi, latitude, longitude, oday, 
+              start, stop, route, passenger_count_quality, 
+              vehicle_load, vehicle_load_ratio, 
+              total_passengers_in, total_passengers_out
+            ) 
+            VALUES 
+              (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                ?
+              )
         """
     }
 
@@ -75,8 +86,8 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         val duration = measureTime {
             for (row in rows) {
                 val apcData = row.first
-                statement.setInt(1, apcData.dir)
-                statement.setInt(2, apcData.oper)
+                statement.setShort(1, apcData.dir)
+                statement.setShort(2, apcData.oper)
                 statement.setInt(3, apcData.veh)
                 statement.setString(4, apcData.uniqueVehicleId)
                 statement.setObject(5, apcData.tst, Types.TIMESTAMP_WITH_TIMEZONE)
@@ -92,10 +103,10 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
                 }
                 statement.setString(12, apcData.route)
                 statement.setString(13, apcData.passengerCountQuality)
-                statement.setInt(14, apcData.vehicleLoad)
+                statement.setShort(14, apcData.vehicleLoad)
                 statement.setDouble(15, apcData.vehicleLoadRatio)
-                statement.setInt(16, apcData.totalPassengersIn)
-                statement.setInt(17, apcData.totalPassengersOut)
+                statement.setShort(16, apcData.totalPassengersIn)
+                statement.setShort(17, apcData.totalPassengersOut)
 
                 statement.addBatch()
             }
@@ -108,5 +119,5 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         rows.map { it.second }.forEach(messageAcknowledger)
     }
 
-    fun addToWriteQueue(apcDataRow: APCDataRow, messageId: MessageId) = writeQueue.add(apcDataRow to messageId)
+    fun addToWriteQueue(apcDataRow: APCDataRow, messageId: MessageId): Unit = writeQueue.put(apcDataRow to messageId)
 }

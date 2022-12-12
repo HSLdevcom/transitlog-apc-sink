@@ -5,6 +5,7 @@ import fi.hsl.common.pulsar.IMessageHandler
 import fi.hsl.common.pulsar.PulsarApplicationContext
 import fi.hsl.common.transitdata.TransitdataProperties
 import fi.hsl.common.transitdata.TransitdataSchema
+import fi.hsl.transitlog.domain.APCDataRow
 import fi.hsl.transitlog.domain.APCDataRow.Companion.toAPCDataRow
 import mu.KotlinLogging
 import org.apache.pulsar.client.api.Message
@@ -80,7 +81,11 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
                 }
             } catch (e: Exception) {
                 log.warn(e) { "Failed to handle message" }
-                e.printStackTrace()
+
+                //Acknowledge messages that can't be written to the DBso that we don't receive them again
+                if (e is APCDataRow.InvalidAPCException) {
+                    ack(msg.messageId)
+                }
             }
         } else {
             log.warn {
