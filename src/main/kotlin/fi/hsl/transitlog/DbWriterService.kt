@@ -19,7 +19,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
     private val log = KotlinLogging.logger {}
 
     companion object {
-        private const val MAX_WRITE_BATCH_SIZE = 1500
+        private const val MAX_WRITE_BATCH_SIZE = 10000
 
         private const val DB_INSERT_QUERY = """
             INSERT INTO passengercount (
