@@ -3,6 +3,7 @@ package fi.hsl.transitlog
 import fi.hsl.transitlog.domain.APCDataRow
 import mu.KotlinLogging
 import org.apache.pulsar.client.api.MessageId
+import java.sql.BatchUpdateException
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Types
@@ -21,7 +22,18 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         private const val MAX_WRITE_BATCH_SIZE = 10000
 
         private const val DB_INSERT_QUERY = """
-            INSERT INTO passengercount (dir, oper, veh, unique_vehicle_id, tst, tsi, latitude, longitude, oday, start, stop, route, passenger_count_quality, vehicle_load, vehicle_load_ratio, total_passengers_in, total_passengers_out) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO passengercount (
+              dir, oper, veh, unique_vehicle_id, 
+              tst, tsi, latitude, longitude, oday, 
+              start, stop, route, passenger_count_quality, 
+              vehicle_load, vehicle_load_ratio, 
+              total_passengers_in, total_passengers_out
+            ) 
+            VALUES 
+              (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                ?
+              )
         """
     }
 
@@ -42,7 +54,11 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
             try {
                 writeBatch(statement)
             } catch (e: Exception) {
-                log.error(e) { "Error writing APC data to DB" }
+                if (e is BatchUpdateException) {
+                    log.error(e) { "Batch update exception when writing APC data to DB (SQL state: ${e.sqlState}, error code: ${e.errorCode}, next exception: ${e.nextException?.toString()})" }
+                } else {
+                    log.error(e) { "Unknown exception when writing APC data to DB" }
+                }
                 throw RuntimeException(e)
             }
         }, dbWriteIntervalSeconds.toLong(), dbWriteIntervalSeconds.toLong(), TimeUnit.SECONDS)
@@ -70,8 +86,8 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         val duration = measureTime {
             for (row in rows) {
                 val apcData = row.first
-                statement.setInt(1, apcData.dir)
-                statement.setInt(2, apcData.oper)
+                statement.setShort(1, apcData.dir)
+                statement.setShort(2, apcData.oper)
                 statement.setInt(3, apcData.veh)
                 statement.setString(4, apcData.uniqueVehicleId)
                 statement.setObject(5, apcData.tst, Types.TIMESTAMP_WITH_TIMEZONE)
@@ -87,10 +103,10 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
                 }
                 statement.setString(12, apcData.route)
                 statement.setString(13, apcData.passengerCountQuality)
-                statement.setInt(14, apcData.vehicleLoad)
+                statement.setShort(14, apcData.vehicleLoad)
                 statement.setDouble(15, apcData.vehicleLoadRatio)
-                statement.setInt(16, apcData.totalPassengersIn)
-                statement.setInt(17, apcData.totalPassengersOut)
+                statement.setShort(16, apcData.totalPassengersIn)
+                statement.setShort(17, apcData.totalPassengersOut)
 
                 statement.addBatch()
             }
@@ -103,5 +119,5 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         rows.map { it.second }.forEach(messageAcknowledger)
     }
 
-    fun addToWriteQueue(apcDataRow: APCDataRow, messageId: MessageId) = writeQueue.add(apcDataRow to messageId)
+    fun addToWriteQueue(apcDataRow: APCDataRow, messageId: MessageId): Unit = writeQueue.put(apcDataRow to messageId)
 }
