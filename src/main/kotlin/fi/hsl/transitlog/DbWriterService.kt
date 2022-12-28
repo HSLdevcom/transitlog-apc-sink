@@ -27,7 +27,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
               tst, tsi, latitude, longitude, oday, 
               start, stop, route, passenger_count_quality, 
               vehicle_load, vehicle_load_ratio, 
-              total_passengers_in, total_passengers_out
+              total_passengers_in, total_passengers_out, randomized_vehicle_load_ratio
             ) 
             VALUES 
               (
@@ -107,6 +107,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
                 statement.setDouble(15, apcData.vehicleLoadRatio)
                 statement.setShort(16, apcData.totalPassengersIn)
                 statement.setShort(17, apcData.totalPassengersOut)
+                statement.setDouble(18, apcData.randomizedVehicleLoadRatio)
 
                 statement.addBatch()
             }

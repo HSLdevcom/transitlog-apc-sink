@@ -23,7 +23,8 @@ data class APCDataRow(val dir: Short,
                       val vehicleLoad: Short,
                       val vehicleLoadRatio: Double,
                       val totalPassengersIn: Short,
-                      val totalPassengersOut: Short
+                      val totalPassengersOut: Short,
+                      val randomizedVehicleLoadRatio: Double
 ) {
     companion object {
         //TODO: handle invalid data
@@ -51,7 +52,8 @@ data class APCDataRow(val dir: Short,
                     payload.vehicleCounts.vehicleLoad.toShort(),
                     payload.vehicleCounts.vehicleLoadRatio,
                     totalPassengersIn.toShort(),
-                    totalPassengersOut.toShort()
+                    totalPassengersOut.toShort(),
+                    this.randomizedVehicleLoadRatio
                 )
             } catch (e: Exception) {
                 throw InvalidAPCException("APC message could not be converted to data row", e)
