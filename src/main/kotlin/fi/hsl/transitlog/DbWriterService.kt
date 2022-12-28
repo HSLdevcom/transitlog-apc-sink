@@ -15,7 +15,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @ExperimentalTime
-class DbWriterService(connection: Connection, private val messageAcknowledger: (MessageId) -> Unit, dbWriteIntervalSeconds: Int = 10) {
+class DbWriterService(connection: Connection, private val messageAcknowledger: (MessageId) -> Unit, dbWriteIntervalSeconds: Int = 10) : AutoCloseable {
     private val log = KotlinLogging.logger {}
 
     companion object {
@@ -64,7 +64,15 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         }, dbWriteIntervalSeconds.toLong(), dbWriteIntervalSeconds.toLong(), TimeUnit.SECONDS)
     }
 
+    override fun close() {
+        dbWriterExecutor.shutdownNow()
+    }
+
     private fun writeBatch(statement: PreparedStatement) {
+        if (dbWriterExecutor.isShutdown) {
+            throw IllegalStateException("DbWriterService is closed")
+        }
+
         val rows = ArrayList<Pair<APCDataRow, MessageId>>(min(MAX_WRITE_BATCH_SIZE, writeQueue.size))
 
         for (i in 1..MAX_WRITE_BATCH_SIZE) {
