@@ -78,6 +78,6 @@ class DbWriterServiceTest {
         assertEquals(7, passengersIn)
         assertEquals(5, passengersOut)
 
-        verify(messageAcknowledger, times(1)).invoke(any())
+        verify(messageAcknowledger, times(1)).invoke(messageId)
     }
 }
