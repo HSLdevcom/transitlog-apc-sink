@@ -27,7 +27,7 @@ import kotlin.time.ExperimentalTime
 class DbWriterServiceTest {
     companion object {
         const val DB_PASSWORD = "test_password"
-        const val WRITE_INTERVAL_SECS = 1
+        const val WRITE_INTERVAL_SECS = 1L
     }
 
     @Container
@@ -48,7 +48,7 @@ class DbWriterServiceTest {
 
         messageAcknowledger = mock { }
 
-        dbWriterService = DbWriterService(connection, messageAcknowledger, WRITE_INTERVAL_SECS)
+        dbWriterService = DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
     }
 
     @AfterTest
