@@ -15,12 +15,10 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @ExperimentalTime
-class DbWriterService(connection: Connection, private val messageAcknowledger: (MessageId) -> Unit, dbWriteIntervalSeconds: Int = 10) {
+class DbWriterService(connection: Connection, private val messageAcknowledger: (MessageId) -> Unit, private val dbMaxWriteBatchSize: Int, dbWriteIntervalSeconds: Long) : AutoCloseable {
     private val log = KotlinLogging.logger {}
 
     companion object {
-        private const val MAX_WRITE_BATCH_SIZE = 10000
-
         private const val DB_INSERT_QUERY = """
             INSERT INTO passengercount (
               dir, oper, veh, unique_vehicle_id, 
@@ -61,13 +59,21 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
                 }
                 throw RuntimeException(e)
             }
-        }, dbWriteIntervalSeconds.toLong(), dbWriteIntervalSeconds.toLong(), TimeUnit.SECONDS)
+        }, dbWriteIntervalSeconds, dbWriteIntervalSeconds, TimeUnit.SECONDS)
+    }
+
+    override fun close() {
+        dbWriterExecutor.shutdownNow()
     }
 
     private fun writeBatch(statement: PreparedStatement) {
-        val rows = ArrayList<Pair<APCDataRow, MessageId>>(min(MAX_WRITE_BATCH_SIZE, writeQueue.size))
+        if (dbWriterExecutor.isShutdown) {
+            throw IllegalStateException("DbWriterService is closed")
+        }
 
-        for (i in 1..MAX_WRITE_BATCH_SIZE) {
+        val rows = ArrayList<Pair<APCDataRow, MessageId>>(min(dbMaxWriteBatchSize, writeQueue.size))
+
+        for (i in 1..dbMaxWriteBatchSize) {
             val row = writeQueue.poll()
             if (row == null) {
                 break

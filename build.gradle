@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'fi.hsl.transitlog'
-version = '1.0.2'
+version = '1.0.3'
 
 repositories {
     mavenCentral()
@@ -25,11 +25,16 @@ shadowJar {
 dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 
+    testImplementation "org.testcontainers:testcontainers:1.17.6"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     implementation "io.github.microutils:kotlin-logging:1.6.22"
 
-    implementation ('fi.hsl:transitdata-common:1.4.3') {
+    implementation ('fi.hsl:transitdata-common:1.5.4') {
         exclude group: 'javax.xml.bind', module: 'activation'
     }
     //Needed for Pulsar

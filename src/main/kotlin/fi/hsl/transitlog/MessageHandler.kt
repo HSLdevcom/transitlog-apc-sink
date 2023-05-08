@@ -21,10 +21,12 @@ import kotlin.time.ExperimentalTime
 class MessageHandler(private val pulsarApplicationContext: PulsarApplicationContext) : IMessageHandler {
     private val log = KotlinLogging.logger {}
 
-    private val dbWriterService = DbWriterService(createDbConnection(), ::ack)
+    private val config = pulsarApplicationContext.config!!
 
-    private val tstMaxFuture = pulsarApplicationContext.config!!.getDuration("application.apcTstMaxFuture")
-    private val tstMaxPast = pulsarApplicationContext.config!!.getDuration("application.apcTstMaxPast")
+    private val dbWriterService = DbWriterService(createDbConnection(), ::ack, config.getInt("db.maxWriteBatchSize"), config.getDuration("db.writeInterval").toSeconds())
+
+    private val tstMaxFuture = config.getDuration("application.apcTstMaxFuture")
+    private val tstMaxPast = config.getDuration("application.apcTstMaxPast")
 
     private var lastAcknowledgedMessageTime = System.nanoTime()
 
