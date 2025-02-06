@@ -71,8 +71,7 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
         if (TransitdataSchema.hasProtobufSchema(msg, TransitdataProperties.ProtobufSchema.PassengerCount)) {
             try {
                 val apcData = PassengerCount.Data.parseFrom(msg.data)
-                log.info("data debug")
-                log.info(msg.data)
+                log.info("data ${msg.data}")
                 if (hasValidTst(apcData)) {
                     dbWriterService.addToWriteQueue(apcData.toAPCDataRow(), msg.messageId)
                 } else {
