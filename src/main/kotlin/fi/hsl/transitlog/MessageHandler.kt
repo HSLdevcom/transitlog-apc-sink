@@ -71,13 +71,13 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
         if (TransitdataSchema.hasProtobufSchema(msg, TransitdataProperties.ProtobufSchema.PassengerCount)) {
             try {
                 val apcData = PassengerCount.Data.parseFrom(msg.data)
-
+                log.info("data ${msg.data}")
                 if (hasValidTst(apcData)) {
                     dbWriterService.addToWriteQueue(apcData.toAPCDataRow(), msg.messageId)
                 } else {
-                    log.warn {
-                        "Timestamp (tst) of APC message from vehicle ${apcData.payload.oper}/${apcData.payload.veh} was outside of accepted range. Tst: ${formatTimestampForLog(apcData.payload.tst)}, received at: ${formatTimestampForLog(apcData.receivedAt)}"
-                    }
+                    //log.warn {
+                    //    "Timestamp (tst) of APC message from vehicle ${apcData.payload.oper}/${apcData.payload.veh} was outside of accepted range. Tst: ${formatTimestampForLog(apcData.payload.tst)}, received at: ${formatTimestampForLog(apcData.receivedAt)}"
+                    //}
                     //Ack message with invalid timestamp so that we don't receive it again
                     ack(msg.messageId)
                 }
