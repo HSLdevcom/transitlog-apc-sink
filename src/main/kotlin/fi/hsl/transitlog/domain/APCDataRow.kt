@@ -31,9 +31,10 @@ data class APCDataRow(val dir: Short,
             val payload = this.payload
 
             try {
-                val totalPassengersIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.sumOf { count -> count.`in` } }
-                val totalPassengersOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.sumOf { count -> count.out } }
+                val allowedClasses = setOf("adult", "child")
 
+                val totalPassengersIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz in allowedClasses }.sumOf { count -> count.`in`.toInt() } }
+                val totalPassengersOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz in allowedClasses }.sumOf { count -> count.out.toInt() } }
                 return APCDataRow(
                     payload.dir.toShort(),
                     payload.oper.toShort(),
