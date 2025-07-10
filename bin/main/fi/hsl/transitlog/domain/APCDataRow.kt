@@ -51,7 +51,9 @@ data class APCDataRow(val dir: Short,
                     payload.vehicleCounts.vehicleLoad.toShort(),
                     payload.vehicleCounts.vehicleLoadRatio,
                     totalPassengersIn.toShort(),
-                    totalPassengersOut.toShort()
+                    totalPassengersOut.toShort(),
+                    bikesIn.toShort(),
+                    bikesOut.toShort()
                 )
             } catch (e: Exception) {
                 throw InvalidAPCException("APC message could not be converted to data row", e)
