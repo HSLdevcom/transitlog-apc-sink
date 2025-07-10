@@ -25,12 +25,13 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
               tst, tsi, latitude, longitude, oday, 
               start, stop, route, passenger_count_quality, 
               vehicle_load, vehicle_load_ratio, 
-              total_passengers_in, total_passengers_out
+              total_passengers_in, total_passengers_out,
+              bikes_in, bikes_out
             ) 
             VALUES 
               (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                ?
+                ?, ?, ?
               )
         """
     }
@@ -113,6 +114,8 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
                 statement.setDouble(15, apcData.vehicleLoadRatio)
                 statement.setShort(16, apcData.totalPassengersIn)
                 statement.setShort(17, apcData.totalPassengersOut)
+                statement.setShort(18, apcData.bikesIn)
+                statement.setShort(19, apcData.bikesOut)
 
                 statement.addBatch()
             }

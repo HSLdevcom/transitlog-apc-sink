@@ -23,7 +23,9 @@ data class APCDataRow(val dir: Short,
                       val vehicleLoad: Short,
                       val vehicleLoadRatio: Double,
                       val totalPassengersIn: Short,
-                      val totalPassengersOut: Short
+                      val totalPassengersOut: Short,
+                      val bikesIn: Short,
+                      val bikesOut: Short
 ) {
     companion object {
         //TODO: handle invalid data
@@ -35,6 +37,10 @@ data class APCDataRow(val dir: Short,
 
                 val totalPassengersIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz in allowedClasses }.sumOf { count -> count.`in`.toInt() } }
                 val totalPassengersOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz in allowedClasses }.sumOf { count -> count.out.toInt() } }
+
+                val bikesIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "bike" }.sumOf { count -> count.`in`.toInt() } }
+                val bikesOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "bike" }.sumOf { count -> count.out.toInt() } }
+
                 return APCDataRow(
                     payload.dir.toShort(),
                     payload.oper.toShort(),
@@ -52,7 +58,9 @@ data class APCDataRow(val dir: Short,
                     payload.vehicleCounts.vehicleLoad.toShort(),
                     payload.vehicleCounts.vehicleLoadRatio,
                     totalPassengersIn.toShort(),
-                    totalPassengersOut.toShort()
+                    totalPassengersOut.toShort(),
+                    bikesIn.toShort(),
+                    bikesOut.toShort()
                 )
             } catch (e: Exception) {
                 throw InvalidAPCException("APC message could not be converted to data row", e)
