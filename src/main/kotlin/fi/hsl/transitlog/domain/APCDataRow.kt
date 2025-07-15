@@ -25,7 +25,13 @@ data class APCDataRow(val dir: Short,
                       val totalPassengersIn: Short,
                       val totalPassengersOut: Short,
                       val bikesIn: Short,
-                      val bikesOut: Short
+                      val bikesOut: Short,
+                      val wheelchairsIn: Short,
+                      val wheelchairsOut: Short,
+                      val pramsIn: Short,
+                      val pramsOut: Short,
+                      val otherIn: Short,
+                      val otherOut: Short,
 ) {
     companion object {
         //TODO: handle invalid data
@@ -40,6 +46,15 @@ data class APCDataRow(val dir: Short,
 
                 val bikesIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "bike" }.sumOf { count -> count.`in`.toInt() } }
                 val bikesOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "bike" }.sumOf { count -> count.out.toInt() } }
+
+                val wheelchairsIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "wheelchair" }.sumOf { count -> count.`in`.toInt() } }
+                val wheelchairsOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "wheelchair" }.sumOf { count -> count.out.toInt() } }
+
+                val pramsIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "pram" }.sumOf { count -> count.`in`.toInt() } }
+                val pramsOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "pram" }.sumOf { count -> count.out.toInt() } }
+
+                val otherIn = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "other" }.sumOf { count -> count.`in`.toInt() } }
+                val otherOut = payload.vehicleCounts.doorCountsList.sumOf { door -> door.countList.filter { count -> count.clazz != null && count.clazz == "other" }.sumOf { count -> count.out.toInt() } }
 
                 return APCDataRow(
                     payload.dir.toShort(),
@@ -60,7 +75,13 @@ data class APCDataRow(val dir: Short,
                     totalPassengersIn.toShort(),
                     totalPassengersOut.toShort(),
                     bikesIn.toShort(),
-                    bikesOut.toShort()
+                    bikesOut.toShort(),
+                    wheelchairsIn.toShort(),
+                    wheelchairsOut.toShort(),
+                    pramsIn.toShort(),
+                    pramsOut.toShort(),
+                    otherIn.toShort(),
+                    otherOut.toShort()
                 )
             } catch (e: Exception) {
                 throw InvalidAPCException("APC message could not be converted to data row", e)

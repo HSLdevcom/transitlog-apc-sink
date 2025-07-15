@@ -44,7 +44,7 @@ class DbWriterServiceTest {
     fun setup() {
         connection = DriverManager.getConnection("jdbc:postgresql://${postgres.host}:${postgres.firstMappedPort}/?user=postgres&reWriteBatchedInserts=true&password=$DB_PASSWORD")
 
-        connection.prepareStatement("CREATE TABLE passengercount (dir SMALLINT, oper SMALLINT, veh INT, unique_vehicle_id TEXT, tst TIMESTAMP WITH TIME ZONE, tsi BIGINT, latitude REAL, longitude REAL, oday DATE, start TIME, stop INT, route TEXT, passenger_count_quality TEXT, vehicle_load SMALLINT, vehicle_load_ratio REAL, total_passengers_in SMALLINT, total_passengers_out SMALLINT, bikes_in SMALLINT, bikes_out SMALLINT)").execute()
+        connection.prepareStatement("CREATE TABLE passengercount (dir SMALLINT, oper SMALLINT, veh INT, unique_vehicle_id TEXT, tst TIMESTAMP WITH TIME ZONE, tsi BIGINT, latitude REAL, longitude REAL, oday DATE, start TIME, stop INT, route TEXT, passenger_count_quality TEXT, vehicle_load SMALLINT, vehicle_load_ratio REAL, total_passengers_in SMALLINT, total_passengers_out SMALLINT, bikes_in SMALLINT, bikes_out SMALLINT, wheelchairs_in SMALLINT, wheelchairs_out SMALLINT, prams_in SMALLINT, prams_out SMALLINT, other_in SMALLINT, other_out SMALLINT)").execute()
 
         messageAcknowledger = mock { }
 
