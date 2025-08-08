@@ -27,7 +27,7 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
               vehicle_load, vehicle_load_ratio, 
               total_passengers_in, total_passengers_out,
               bikes_in, bikes_out, wheelchairs_in, wheelchairs_out,
-              prams_in, prams_out, other_in, others_out
+              prams_in, prams_out, other_in, other_out
             ) 
             VALUES 
               (
