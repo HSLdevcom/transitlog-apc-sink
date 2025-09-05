@@ -15,7 +15,7 @@ jobs:
           cache: 'gradle'
 
       - name: Run Spotless Apply
-        run: ./gradlew spotless:apply
+        run: ./gradlew spotlessApply
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
