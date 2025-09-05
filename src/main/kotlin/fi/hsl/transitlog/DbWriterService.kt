@@ -1,8 +1,6 @@
 package fi.hsl.transitlog
 
 import fi.hsl.transitlog.domain.APCDataRow
-import mu.KotlinLogging
-import org.apache.pulsar.client.api.MessageId
 import java.sql.BatchUpdateException
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -13,13 +11,21 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
+import mu.KotlinLogging
+import org.apache.pulsar.client.api.MessageId
 
 @ExperimentalTime
-class DbWriterService(connection: Connection, private val messageAcknowledger: (MessageId) -> Unit, private val dbMaxWriteBatchSize: Int, dbWriteIntervalSeconds: Long) : AutoCloseable {
+class DbWriterService(
+    connection: Connection,
+    private val messageAcknowledger: (MessageId) -> Unit,
+    private val dbMaxWriteBatchSize: Int,
+    dbWriteIntervalSeconds: Long
+) : AutoCloseable {
     private val log = KotlinLogging.logger {}
 
     companion object {
-        private const val DB_INSERT_QUERY = """
+        private const val DB_INSERT_QUERY =
+            """
             INSERT INTO passengercount (
               dir, oper, veh, unique_vehicle_id, 
               tst, tsi, latitude, longitude, oday, 
@@ -37,31 +43,39 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         """
     }
 
-    private val dbWriterExecutor = Executors.newSingleThreadScheduledExecutor { runnable ->
-        val thread = Thread(runnable)
-        thread.name = "DbWriterThread"
-        thread.isDaemon = true
-        return@newSingleThreadScheduledExecutor thread
-    }
+    private val dbWriterExecutor =
+        Executors.newSingleThreadScheduledExecutor { runnable ->
+            val thread = Thread(runnable)
+            thread.name = "DbWriterThread"
+            thread.isDaemon = true
+            return@newSingleThreadScheduledExecutor thread
+        }
 
     private val writeQueue = LinkedBlockingQueue<Pair<APCDataRow, MessageId>>()
 
     init {
         val statement = connection.prepareStatement(DB_INSERT_QUERY)
-        statement.queryTimeout = 60 //60s timeout for the query
+        statement.queryTimeout = 60 // 60s timeout for the query
 
-        dbWriterExecutor.scheduleWithFixedDelay({
-            try {
-                writeBatch(statement)
-            } catch (e: Exception) {
-                if (e is BatchUpdateException) {
-                    log.error(e) { "Batch update exception when writing APC data to DB (SQL state: ${e.sqlState}, error code: ${e.errorCode}, next exception: ${e.nextException?.toString()})" }
-                } else {
-                    log.error(e) { "Unknown exception when writing APC data to DB" }
+        dbWriterExecutor.scheduleWithFixedDelay(
+            {
+                try {
+                    writeBatch(statement)
+                } catch (e: Exception) {
+                    if (e is BatchUpdateException) {
+                        log.error(e) {
+                            "Batch update exception when writing APC data to DB (SQL state: ${e.sqlState}, error code: ${e.errorCode}, next exception: ${e.nextException?.toString()})"
+                        }
+                    } else {
+                        log.error(e) { "Unknown exception when writing APC data to DB" }
+                    }
+                    throw RuntimeException(e)
                 }
-                throw RuntimeException(e)
-            }
-        }, dbWriteIntervalSeconds, dbWriteIntervalSeconds, TimeUnit.SECONDS)
+            },
+            dbWriteIntervalSeconds,
+            dbWriteIntervalSeconds,
+            TimeUnit.SECONDS
+        )
     }
 
     override fun close() {
@@ -134,5 +148,6 @@ class DbWriterService(connection: Connection, private val messageAcknowledger: (
         rows.map { it.second }.forEach(messageAcknowledger)
     }
 
-    fun addToWriteQueue(apcDataRow: APCDataRow, messageId: MessageId): Unit = writeQueue.put(apcDataRow to messageId)
+    fun addToWriteQueue(apcDataRow: APCDataRow, messageId: MessageId): Unit =
+        writeQueue.put(apcDataRow to messageId)
 }

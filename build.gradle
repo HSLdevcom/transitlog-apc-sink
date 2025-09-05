@@ -19,6 +19,16 @@ repositories {
     }
 }
 
+spotless {
+    kotlin {
+        ktfmt('0.44').kotlinlangStyle()
+    }
+
+    kotlinGradle {
+        ktfmt('0.44').kotlinlangStyle()
+    }
+}
+
 shadowJar {
     archiveFileName ="${baseName}.${extension}"
 }
