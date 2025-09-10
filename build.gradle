@@ -2,6 +2,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'org.jetbrains.kotlin.jvm' version '1.7.22'
     id 'application'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'fi.hsl.transitlog'
@@ -15,6 +16,16 @@ repositories {
             username = project.findProperty("github.user") ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
         }
+    }
+}
+
+spotless {
+    kotlin {
+        ktfmt('0.44').kotlinlangStyle()
+    }
+
+    kotlinGradle {
+        ktfmt('0.44').kotlinlangStyle()
     }
 }
 
