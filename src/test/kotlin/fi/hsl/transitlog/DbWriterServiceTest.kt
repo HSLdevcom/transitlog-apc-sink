@@ -1,15 +1,6 @@
 package fi.hsl.transitlog
 
 import fi.hsl.transitlog.domain.APCDataRow
-import org.apache.pulsar.client.api.MessageId
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
 import java.sql.Connection
 import java.sql.DriverManager
 import java.time.Instant
@@ -21,6 +12,14 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
+import org.apache.pulsar.client.api.MessageId
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 
 @OptIn(ExperimentalTime::class)
 @Testcontainers
@@ -31,9 +30,10 @@ class DbWriterServiceTest {
     }
 
     @Container
-    val postgres = GenericContainer(DockerImageName.parse("postgres:15-alpine"))
-        .withEnv("POSTGRES_PASSWORD", DB_PASSWORD)
-        .withExposedPorts(5432)
+    val postgres =
+        GenericContainer(DockerImageName.parse("postgres:15-alpine"))
+            .withEnv("POSTGRES_PASSWORD", DB_PASSWORD)
+            .withExposedPorts(5432)
 
     lateinit var connection: Connection
     lateinit var dbWriterService: DbWriterService
@@ -42,13 +42,21 @@ class DbWriterServiceTest {
 
     @BeforeTest
     fun setup() {
-        connection = DriverManager.getConnection("jdbc:postgresql://${postgres.host}:${postgres.firstMappedPort}/?user=postgres&reWriteBatchedInserts=true&password=$DB_PASSWORD")
+        connection =
+            DriverManager.getConnection(
+                "jdbc:postgresql://${postgres.host}:${postgres.firstMappedPort}/?user=postgres&reWriteBatchedInserts=true&password=$DB_PASSWORD"
+            )
 
-        connection.prepareStatement("CREATE TABLE passengercount (dir SMALLINT, oper SMALLINT, veh INT, unique_vehicle_id TEXT, tst TIMESTAMP WITH TIME ZONE, tsi BIGINT, latitude REAL, longitude REAL, oday DATE, start TIME, stop INT, route TEXT, passenger_count_quality TEXT, vehicle_load SMALLINT, vehicle_load_ratio REAL, total_passengers_in SMALLINT, total_passengers_out SMALLINT)").execute()
+        connection
+            .prepareStatement(
+                "CREATE TABLE passengercount (dir SMALLINT, oper SMALLINT, veh INT, unique_vehicle_id TEXT, tst TIMESTAMP WITH TIME ZONE, tsi BIGINT, latitude REAL, longitude REAL, oday DATE, start TIME, stop INT, route TEXT, passenger_count_quality TEXT, vehicle_load SMALLINT, vehicle_load_ratio REAL, total_passengers_in SMALLINT, total_passengers_out SMALLINT, bikes_in SMALLINT, bikes_out SMALLINT, wheelchairs_in SMALLINT, wheelchairs_out SMALLINT, prams_in SMALLINT, prams_out SMALLINT, other_in SMALLINT, other_out SMALLINT)"
+            )
+            .execute()
 
-        messageAcknowledger = mock { }
+        messageAcknowledger = mock {}
 
-        dbWriterService = DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
+        dbWriterService =
+            DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
     }
 
     @AfterTest
@@ -60,10 +68,36 @@ class DbWriterServiceTest {
 
     @Test
     fun `Test writing passenger count data to database`() {
-        val messageId = mock<MessageId> {  }
+        val messageId = mock<MessageId> {}
 
         dbWriterService.addToWriteQueue(
-            APCDataRow(1, 1, 1, "1/1", OffsetDateTime.now(), Instant.now().epochSecond, 0.0, 0.0, LocalDate.now(), LocalTime.now(), 1, "1", "normal", 50, 0.5, 7, 5),
+            APCDataRow(
+                1,
+                1,
+                1,
+                "1/1",
+                OffsetDateTime.now(),
+                Instant.now().epochSecond,
+                0.0,
+                0.0,
+                LocalDate.now(),
+                LocalTime.now(),
+                1,
+                "1",
+                "normal",
+                50,
+                0.5,
+                7,
+                5,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ),
             messageId
         )
 

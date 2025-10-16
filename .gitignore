@@ -7,11 +7,15 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea/misc.xml
+.idea/**/kotlinc.xml
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+
+transitlog-apc-sink.iml
 
 # Generated files
 .idea/**/contentModel.xml
@@ -56,6 +60,8 @@ out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+.idea/modules
+.idea/modules.xml
 
 # JIRA plugin
 atlassian-ide-plugin.xml
