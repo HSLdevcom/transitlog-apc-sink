@@ -4,11 +4,11 @@ on: [push, pull_request]
 
 jobs:
   build:
-      uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@main
-      with:
-        uploadJarArtifact: true
-        jarArtifactName: "transitlog-apc-sink.jar"
-        jarArtifactPath: "build/libs/transitlog-apc-sink.jar"
+    uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@main
+    with:
+      uploadJarArtifact: true
+      jarArtifactName: "transitlog-apc-sink.jar"
+      jarArtifactPath: "build/libs/transitlog-apc-sink.jar"
 
   build-release-docker-image:
     needs: build
