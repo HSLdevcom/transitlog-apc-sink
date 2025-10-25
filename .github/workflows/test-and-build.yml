@@ -5,9 +5,10 @@ on: [push, pull_request]
 jobs:
   build:
     uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@main
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
+      DOCKER_PASSWORD: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
     with:
-      dockerUser: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
-      dockerPassword: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
       uploadJarArtifact: true
       jarArtifactName: "transitlog-apc-sink.jar"
       jarArtifactPath: "build/libs/transitlog-apc-sink.jar"
