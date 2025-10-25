@@ -6,11 +6,11 @@ jobs:
   build:
     uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@main
     with:
+      dockerUser: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
+      dockerPassword: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
       uploadJarArtifact: true
       jarArtifactName: "transitlog-apc-sink.jar"
       jarArtifactPath: "build/libs/transitlog-apc-sink.jar"
-      dockerUser: ${{ secrets.TRANSITLOG_DOCKERHUB_USER }}
-      dockerPassword: ${{ secrets.TRANSITLOG_DOCKERHUB_TOKEN }}
 
   build-release-docker-image:
     needs: build
