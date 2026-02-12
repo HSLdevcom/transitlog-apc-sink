@@ -172,3 +172,5 @@ gradle-app.setting
 
 # HFP blob directory
 hfp/
+
+/AGENTS.md
