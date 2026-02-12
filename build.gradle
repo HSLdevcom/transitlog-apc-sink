@@ -12,7 +12,7 @@ version = '2.0.0'
 repositories {
     mavenCentral()
     maven {
-        url "https://maven.pkg.github.com/HSLdevcom/*"
+        url "https://maven.pkg.github.com/HSLdevcom/transitdata-common"
         credentials {
             username = project.findProperty("github.user") ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
