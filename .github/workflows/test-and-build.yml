@@ -2,9 +2,6 @@ name: Test and create Docker image
 
 on: [push, pull_request]
 
-env:
-  JACOCO_VERSION: "0.8.14"
-
 jobs:
   build:
     uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@feature/59649-measure-test-coverage
@@ -16,7 +13,6 @@ jobs:
       uploadJarArtifact: true
       jarArtifactName: "transitlog-apc-sink.jar"
       jarArtifactPath: "build/libs/transitlog-apc-sink.jar"
-      codeCoverageEnabled: true
 
   build-release-docker-image:
     needs: build

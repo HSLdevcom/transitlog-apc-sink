@@ -57,6 +57,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
 jacoco {
@@ -70,10 +71,6 @@ jacocoTestReport {
         html.required = true
         csv.required = false
     }
-}
-
-test {
-    finalizedBy jacocoTestReport
 }
 
 compileKotlin {
