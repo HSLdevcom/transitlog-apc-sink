@@ -7,16 +7,16 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
 import org.apache.pulsar.client.api.MessageId
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
@@ -26,25 +26,30 @@ import org.testcontainers.utility.DockerImageName
 class DbWriterServiceTest {
     companion object {
         const val DB_PASSWORD = "test_password"
+        const val DB_USER = "postgres"
         const val WRITE_INTERVAL_SECS = 1L
-    }
 
-    @Container
-    val postgres =
-        GenericContainer(DockerImageName.parse("postgres:15-alpine"))
-            .withEnv("POSTGRES_PASSWORD", DB_PASSWORD)
-            .withExposedPorts(5432)
+        @Container
+        @JvmField
+        val postgres =
+            PostgreSQLContainer(DockerImageName.parse("postgres:15-alpine"))
+                .withDatabaseName(DB_USER)
+                .withExposedPorts(5432)
+                .withUsername(DB_USER)
+                .withPassword(DB_PASSWORD)
+    }
 
     lateinit var connection: Connection
     lateinit var dbWriterService: DbWriterService
-
     lateinit var messageAcknowledger: (MessageId) -> Unit
 
-    @BeforeTest
+    @BeforeEach
     fun setup() {
         connection =
             DriverManager.getConnection(
-                "jdbc:postgresql://${postgres.host}:${postgres.firstMappedPort}/?user=postgres&reWriteBatchedInserts=true&password=$DB_PASSWORD"
+                postgres.jdbcUrl + "&reWriteBatchedInserts=true",
+                postgres.username,
+                postgres.password
             )
 
         connection
@@ -54,15 +59,16 @@ class DbWriterServiceTest {
             .execute()
 
         messageAcknowledger = mock {}
+        dbWriterService =
+            DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
 
         dbWriterService =
             DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
     }
 
-    @AfterTest
+    @AfterEach
     fun teardown() {
         dbWriterService.close()
-
         connection.close()
     }
 
