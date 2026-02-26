@@ -61,9 +61,6 @@ class DbWriterServiceTest {
         messageAcknowledger = mock {}
         dbWriterService =
             DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
-
-        dbWriterService =
-            DbWriterService(connection, messageAcknowledger, 10000, WRITE_INTERVAL_SECS)
     }
 
     @AfterEach
