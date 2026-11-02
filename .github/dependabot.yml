@@ -3,12 +3,34 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "monthly"
-    target-branch: "develop"
-    open-pull-requests-limit: 2
+      interval: "daily"
+    open-pull-requests-limit: 20
+    cooldown:
+      default-days: 30
+      semver-major-days: 90
+      semver-minor-days: 60
+      semver-patch-days: 30
+    groups:
+      dev-all:
+        dependency-type: "development"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      prod-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
-    target-branch: "develop"
-    open-pull-requests-limit: 2
+      interval: "daily"
+    open-pull-requests-limit: 20
+    cooldown:
+      default-days: 30
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"

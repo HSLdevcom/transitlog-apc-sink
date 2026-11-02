@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.7.22'
     id 'application'
     id 'com.diffplug.spotless' version '6.25.0'
+    id 'jacoco'
 }
 
 group = 'fi.hsl.transitlog'
@@ -56,6 +57,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
 }
 
 compileKotlin {
