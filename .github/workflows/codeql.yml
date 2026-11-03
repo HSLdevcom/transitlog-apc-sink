@@ -22,7 +22,7 @@ jobs:
         - language: actions
           build-mode: none
         - language: java-kotlin
-          build-mode: autobuild
+          build-mode: manual
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -31,6 +31,19 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
+    - name: Set up Java 25
+      if: matrix.language == 'java-kotlin'
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '25'
+        cache: gradle
+    - name: Build Kotlin sources for CodeQL
+      if: matrix.language == 'java-kotlin'
+      run: ./gradlew classes --no-daemon
+      env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
