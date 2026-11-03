@@ -19,7 +19,7 @@ jobs:
     secrets: inherit
     with:
       performRelease: ${{ github.ref == 'refs/heads/main' }}
-      runTestsInsideDocker: true
+      runTestsInsideDocker: false
 
   publish-edge:
     name: Publish edge Docker tag
