@@ -7,7 +7,7 @@ permissions:
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "v*"
   pull_request:
@@ -18,13 +18,13 @@ jobs:
     uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@1.0.7
     secrets: inherit
     with:
-      performRelease: ${{ github.ref == 'refs/heads/master' }}
+      performRelease: ${{ github.ref == 'refs/heads/main' }}
       runTestsInsideDocker: true
 
   publish-edge:
     name: Publish edge Docker tag
     needs: ci-cd
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: docker-hub-release
     permissions:
@@ -37,5 +37,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_INFODEVOPS_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_INFODEVOPS_TOKEN }}
-      - name: Tag the master image as edge
-        run: docker buildx imagetools create --tag hsldevcom/transitlog-apc-sink:edge hsldevcom/transitlog-apc-sink:master
+      - name: Tag the main image as edge
+        run: docker buildx imagetools create --tag hsldevcom/transitlog-apc-sink:edge hsldevcom/transitlog-apc-sink:main
