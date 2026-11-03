@@ -1,6 +1,6 @@
 plugins {
-    id 'com.gradleup.shadow' version '9.1.0'
-    id 'org.jetbrains.kotlin.jvm' version '2.3.0'
+    id 'com.gradleup.shadow' version '9.6.1'
+    id 'org.jetbrains.kotlin.jvm' version '2.4.10'
     id 'application'
     id 'com.diffplug.spotless' version '7.2.1'
     id 'jacoco'
@@ -37,8 +37,8 @@ tasks.named("shadowJar") {
 dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 
-    testImplementation "org.testcontainers:testcontainers:1.17.6"
-    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+    testImplementation "org.testcontainers:testcontainers:1.21.4"
+    testImplementation "org.testcontainers:junit-jupiter:1.21.4"
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
 
@@ -52,7 +52,7 @@ dependencies {
     //Needed for Pulsar
     implementation 'jaxb:activation:1.0.2'
 
-    implementation 'org.postgresql:postgresql:42.3.4'
+    implementation 'org.postgresql:postgresql:42.7.13'
 }
 
 test {
