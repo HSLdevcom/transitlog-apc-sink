@@ -15,7 +15,7 @@ on:
 
 jobs:
   ci-cd:
-    uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@1.0.7
+    uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@main
     secrets: inherit
     with:
       performRelease: ${{ github.ref == 'refs/heads/main' }}

@@ -96,9 +96,9 @@ class DbWriterServiceTest {
                 0,
                 0,
                 0,
-                0
+                0,
             ),
-            messageId
+            messageId,
         )
 
         Thread.sleep((WRITE_INTERVAL_SECS * 1000 * 2).toLong())

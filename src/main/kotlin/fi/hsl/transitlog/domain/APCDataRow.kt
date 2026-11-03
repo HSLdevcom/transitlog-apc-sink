@@ -139,7 +139,7 @@ data class APCDataRow(
                     pramsIn.toShort(),
                     pramsOut.toShort(),
                     otherIn.toShort(),
-                    otherOut.toShort()
+                    otherOut.toShort(),
                 )
             } catch (e: Exception) {
                 throw InvalidAPCException("APC message could not be converted to data row", e)

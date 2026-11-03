@@ -1,8 +1,8 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.22'
+    id 'com.gradleup.shadow' version '9.1.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.3.0'
     id 'application'
-    id 'com.diffplug.spotless' version '6.25.0'
+    id 'com.diffplug.spotless' version '7.2.1'
     id 'jacoco'
 }
 
@@ -22,16 +22,16 @@ repositories {
 
 spotless {
     kotlin {
-        ktfmt('0.44').kotlinlangStyle()
+        ktfmt('0.55').kotlinlangStyle()
     }
 
     kotlinGradle {
-        ktfmt('0.44').kotlinlangStyle()
+        ktfmt('0.55').kotlinlangStyle()
     }
 }
 
-shadowJar {
-    archiveFileName ="${baseName}.${extension}"
+tasks.named("shadowJar") {
+    archiveFileName.set("transitlog-apc-sink.jar")
 }
 
 dependencies {
@@ -65,14 +65,18 @@ jacocoTestReport {
     }
 }
 
+kotlin {
+    jvmToolchain(25)
+}
+
 compileKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "25"
 }
 
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "25"
 }
 
 application {
-    mainClassName = 'fi.hsl.transitlog.MainKt'
+    mainClass = 'fi.hsl.transitlog.MainKt'
 }

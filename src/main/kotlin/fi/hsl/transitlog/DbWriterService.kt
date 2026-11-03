@@ -19,7 +19,7 @@ class DbWriterService(
     connection: Connection,
     private val messageAcknowledger: (MessageId) -> Unit,
     private val dbMaxWriteBatchSize: Int,
-    dbWriteIntervalSeconds: Long
+    dbWriteIntervalSeconds: Long,
 ) : AutoCloseable {
     private val log = KotlinLogging.logger {}
 
@@ -74,7 +74,7 @@ class DbWriterService(
             },
             dbWriteIntervalSeconds,
             dbWriteIntervalSeconds,
-            TimeUnit.SECONDS
+            TimeUnit.SECONDS,
         )
     }
 

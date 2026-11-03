@@ -7,3 +7,5 @@ Sink for writing APC (passenger count) data to Transitlog DB. This project is pa
 ### Dependencies
 
 - [transitdata-common](https://github.com/HSLdevcom/transitdata-common)
+
+Building and running the application requires Java 25.

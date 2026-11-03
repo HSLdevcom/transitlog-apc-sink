@@ -29,7 +29,7 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
             createDbConnection(),
             ::ack,
             config.getInt("db.maxWriteBatchSize"),
-            config.getDuration("db.writeInterval").toSeconds()
+            config.getDuration("db.writeInterval").toSeconds(),
         )
 
     private val tstMaxFuture = config.getDuration("application.apcTstMaxFuture")
@@ -85,7 +85,7 @@ class MessageHandler(private val pulsarApplicationContext: PulsarApplicationCont
         if (
             TransitdataSchema.hasProtobufSchema(
                 msg,
-                TransitdataProperties.ProtobufSchema.PassengerCount
+                TransitdataProperties.ProtobufSchema.PassengerCount,
             )
         ) {
             try {
