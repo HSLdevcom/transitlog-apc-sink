@@ -1,9 +1,13 @@
 name: "Code analysis"
+
+permissions:
+  contents: read
+
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '0 8 * * *'
 jobs:
@@ -19,32 +23,34 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - language: actions
-          build-mode: none
-        - language: java-kotlin
-          build-mode: manual
+          - language: actions
+            build-mode: none
+          - language: java-kotlin
+            build-mode: manual
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
-    - name: Set up Java 25
-      if: matrix.language == 'java-kotlin'
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: '25'
-        cache: gradle
-    - name: Build Kotlin sources for CodeQL
-      if: matrix.language == 'java-kotlin'
-      run: ./gradlew classes --no-daemon
-      env:
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@74c1aea9df7c0f02e9b7bfe4a8935abf2e5e3aa6 # v3.39.5
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+      - name: Set up Java 25
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: gradle
+      - name: Build Kotlin sources for CodeQL
+        if: matrix.language == 'java-kotlin'
+        run: ./gradlew classes --no-daemon
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@74c1aea9df7c0f02e9b7bfe4a8935abf2e5e3aa6 # v3.39.5
+        with:
+          category: "/language:${{matrix.language}}"
