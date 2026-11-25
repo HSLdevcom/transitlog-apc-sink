@@ -9,3 +9,6 @@ Sink for writing APC (passenger count) data to Transitlog DB. This project is pa
 - [transitdata-common](https://github.com/HSLdevcom/transitdata-common)
 
 Building and running the application requires Java 25.
+
+The runtime container runs as UID and GID 65534. Any mounted files it needs
+must be readable by that user.

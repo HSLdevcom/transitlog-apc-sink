@@ -20,4 +20,5 @@ WORKDIR /usr/app
 COPY --from=build /usr/app/build/libs/transitlog-apc-sink.jar /usr/app/transitlog-apc-sink.jar
 COPY --chmod=755 start-application.sh /start-application.sh
 USER 10001
+
 ENTRYPOINT ["/start-application.sh"]
