@@ -16,7 +16,7 @@ on:
 jobs:
   ci-cd:
     uses: HSLdevcom/transitdata-shared-workflows/.github/workflows/ci-cd-kotlin.yml@7d7ce3792154049042bf37ad2b00739a1d3bfbfe # main
-    secrets: inherit
+    secrets: inherit # zizmor: ignore[secrets-inherit] Shared workflow does not declare named secrets.
     with:
       performRelease: ${{ github.ref == 'refs/heads/main' }}
       runTestsInsideDocker: false
