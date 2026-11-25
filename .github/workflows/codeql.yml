@@ -13,9 +13,6 @@ permissions:
     - cron: '0 8 * * *'
     - cron: '0 8 * * *'
 
-permissions:
-  contents: read
-
 jobs:
   analyze:
     name: Analyze code
