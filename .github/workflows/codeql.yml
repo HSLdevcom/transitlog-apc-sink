@@ -1,15 +1,17 @@
+---
 name: "Code analysis"
 
 permissions:
   contents: read
 
-on:
+'on':
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
   schedule:
     - cron: '0 8 * * *'
+
 jobs:
   analyze:
     name: Analyze code
@@ -29,7 +31,7 @@ jobs:
             build-mode: manual
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
       - name: Initialize CodeQL
