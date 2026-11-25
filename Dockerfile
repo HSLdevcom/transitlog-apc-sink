@@ -18,4 +18,5 @@ FROM hsldevcom/infodevops-docker-base-images:1.0.2-25-java-jre
 WORKDIR /usr/app
 COPY --from=build /usr/app/build/libs/transitlog-apc-sink.jar /usr/app/transitlog-apc-sink.jar
 COPY --chmod=755 start-application.sh /start-application.sh
+USER 65534:65534
 ENTRYPOINT ["/start-application.sh"]
