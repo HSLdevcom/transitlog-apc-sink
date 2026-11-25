@@ -1,10 +1,11 @@
+---
 name: CI/CD
 
 permissions:
   contents: read
   packages: read
 
-on:
+'on':
   push:
     branches:
       - main
